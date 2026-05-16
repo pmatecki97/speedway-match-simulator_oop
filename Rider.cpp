@@ -10,6 +10,7 @@
 Rider::Rider(std::string name, std::string surname, int strength):name(name),surname(surname),strength(strength) {
     disposition_of_the_day = 0;
     is_injured = false;
+    match_points =0;
 }
 
 std::string Rider::get_name() const {
@@ -29,4 +30,13 @@ int Rider::get_strength() const {
 void Rider::disposition_of_the_day_generator() {
     int current_disposition = (rand() % 31) - 15;
     disposition_of_the_day = current_disposition;
+}
+
+int Rider::add_match_points(int points) {
+    match_points += points;
+    return match_points;
+}
+
+int Rider::get_match_points() const {
+    return match_points;
 }
