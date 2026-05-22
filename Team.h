@@ -14,11 +14,13 @@ class Team {
     std::vector<Rider> line_up;
 public:
     Team(const std::string& team_name);
+    Team(const std::vector<Rider>& roster);
     void add_rider(const Rider& rider);
     void add_points(int points);
     std::string get_team_name() const;
     int get_team_points() const;
     const std::vector<Rider>& get_line_up() const;
+    Rider* get_rider_ptr(int index);
 };
 
 

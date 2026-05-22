@@ -7,7 +7,9 @@
 Team::Team(const std::string& team_name):team_name(team_name) {
     team_points =0;
 }
+Team::Team(const std::vector<Rider>& roster) : line_up(roster) {
 
+}
 int Team::get_team_points() const {
     return team_points;
 }
@@ -26,4 +28,7 @@ void Team::add_rider(const Rider& rider) {
 
 void Team::add_points(int points) {
     team_points += points;
+}
+Rider* Team::get_rider_ptr(int index) {
+    return &line_up[index];
 }
