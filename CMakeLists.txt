@@ -11,4 +11,10 @@ add_executable(speedway_mw_11_292745 main.cpp
         Heat.cpp
         Heat.h
         Match.cpp
-        Match.h)
+        Match.h
+        Engine.cpp
+        Engine.h
+        Button.cpp
+        Button.h)
+find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
+target_link_libraries(speedway_mw_11_292745 sfml-graphics sfml-window sfml-system)
