@@ -51,3 +51,11 @@ void Match::play_heat(int heat_number) {
     home_score += current_heat.get_home_points();
     heats.push_back(current_heat);
 }
+
+Team &Match::get_away_team() {
+    return away_team;
+};
+
+Team &Match::get_home_team() {
+    return home_team;
+};

@@ -11,8 +11,8 @@ int main() {
     srand(time(NULL));
 
 
-    Rider star("Bartosz", "Zmarzlik", 95);
-    Rider junior("Mateusz", "Cierniak", 60);
+    Rider star("Bartosz", "Zmarzlik", 98);
+    Rider junior("Nazar", "Parnicki", 84);
 
 
     std::vector<Rider> home_roster;

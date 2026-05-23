@@ -19,6 +19,8 @@ public:
     void play_match();
     int get_home_match_points() const;
     int get_away_match_points() const;
+    Team& get_home_team();
+    Team& get_away_team();
 };
 
 

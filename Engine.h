@@ -16,7 +16,10 @@ class Engine {
     Button* sim_button;
     void handle_events();
     void render();
-
+    sf::Text score_text;
+    sf::Text heat_text;
+    sf::Text home_roster_text;
+    sf::Text away_roster_text;
 public:
     Engine(Match &match);
     ~Engine(); //destruktor
