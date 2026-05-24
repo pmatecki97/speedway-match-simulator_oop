@@ -7,21 +7,23 @@
 Button::Button(float x, float y, float width, float height, sf::Font &font, std::string btn_text){
     shape.setPosition(sf::Vector2f(x,y));
     shape.setSize(sf::Vector2f(width,height));
-    shape.setFillColor(sf::Color(70, 70, 70));
+    shape.setFillColor(sf::Color(46, 204, 113));
     text.setFont(font);
     text.setString(btn_text);
-    text.setCharacterSize(20);
+    text.setCharacterSize(35);
     text.setFillColor(sf::Color::White);
-    text.setPosition(sf::Vector2f(x+10,y+10));
+    sf::FloatRect textRect = text.getLocalBounds();
+    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    text.setPosition(sf::Vector2f(x + width / 2.0f, y + height / 2.0f));
 }
 
 bool Button::is_clicked(sf::RenderWindow &window) {
     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-    sf::Vector2f mouse_pos_f(static_cast<float>(mouse_pos.x),static_cast<float>(mouse_pos.y));
-    if (shape.getGlobalBounds().contains(mouse_pos_f) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    sf::Vector2f world_pos = window.mapPixelToCoords(mouse_pos);
+    if (shape.getGlobalBounds().contains(world_pos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         return true;
     }
-    return false;
+    return shape.getGlobalBounds().contains(world_pos);
 }
 
 void Button::render(sf::RenderWindow &window) {

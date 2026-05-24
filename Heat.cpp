@@ -35,31 +35,32 @@ void Heat::simulate_race() {
     int score_blue = calculate_rider_score(blue);
     int score_yellow =  calculate_rider_score(yellow);
     int score_white = calculate_rider_score(white);
+
     std::vector< std::pair<int, Rider*> > results;
     results.push_back(std::make_pair(score_red,red));
     results.push_back((std::make_pair(score_blue,blue)));
     results.push_back(std::make_pair(score_white,white));
     results.push_back((std::make_pair(score_yellow,yellow)));
+
     std::sort(results.begin(),results.end());
-    results[3].second->add_match_points(3);
-    if (results[3].second == red || results[3].second == blue){
-        home_points+=3;
-    }
-    else {
-        away_points+=3;
-    }
-    results[2].second->add_match_points(2);
-    if (results[2].second == red || results[2].second == blue){
-        home_points+=2;
-    }
-    else {
-        away_points+=2;
-    }
-    results[1].second->add_match_points(1);
-    if (results[1].second == red || results[1].second == blue){
-        home_points+=1;
-    }
-    else {
-        away_points+=1;
+
+    int points_award[] = {0, 1, 2, 3};
+    for (int rider_idx = 0; rider_idx < 4; rider_idx++) {
+        if (results[rider_idx].first == -999) {
+            continue;
+        }
+
+        Rider* current_rider = results[rider_idx].second;
+        int earned_points = points_award[rider_idx];
+
+
+        current_rider->add_match_points(earned_points);
+
+
+        if (current_rider == red || current_rider == blue) {
+            home_points += earned_points;
+        } else {
+            away_points += earned_points;
+        }
     }
 }

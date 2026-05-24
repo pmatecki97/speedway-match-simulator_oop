@@ -6,8 +6,8 @@
 int main() {
     srand(time(NULL));
 
-    Team home_team("drużyna 1");
-    Team away_team("drużyna 2");
+    Team home_team("TEAM 1");
+    Team away_team("Team 2");
 
     home_team.load_from_file("unia_leszno.txt");
     away_team.load_from_file("wlokniarz_czestochowa.txt");

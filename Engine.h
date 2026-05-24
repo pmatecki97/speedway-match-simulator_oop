@@ -20,6 +20,12 @@ class Engine {
     sf::Text heat_text;
     sf::Text home_roster_text;
     sf::Text away_roster_text;
+    sf::Text home_team_name;
+    sf::Text away_team_name;
+    sf::Text red_helmet_text;
+    sf::Text blue_helmet_text;
+    sf::Text white_helmet_text;
+    sf::Text yellow_helmet_text;
 public:
     Engine(Match &match);
     ~Engine(); //destruktor
