@@ -21,6 +21,7 @@ public:
     int get_team_points() const;
     const std::vector<Rider>& get_line_up() const;
     Rider* get_rider_ptr(int index);
+    void load_from_file(std::string filename);
 };
 
 
