@@ -75,9 +75,9 @@ void Engine::run() {
  * -maszyna stanów (bieg przesymulowany czy nie),
  * -klikanie w zawodnika w celu rezerwy,
  * */
-void Engine::handle_events() {
+void Engine::handle_match_events() {
     sf::Event event;
-    while (window.pollEvent(event)){
+    while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
         }
@@ -109,8 +109,8 @@ void Engine::handle_events() {
             }
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-                sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                sf::Vector2f world_pos = window.mapPixelToCoords(mouse_pos);
+            sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+            sf::Vector2f world_pos = window.mapPixelToCoords(mouse_pos);
             if (current_heat<=15 && !is_heat_simulated) {
                 if (red_helmet_text.getGlobalBounds().contains(world_pos)) {
                     active_substitution_helmet = 0;
@@ -133,24 +133,26 @@ void Engine::handle_events() {
                 }
             }
             if (sim_button->is_clicked(window)) {
-                if (current_heat<=15) {
-                   /*MASZYNA STANÓW !!!*/
-                    if (!is_heat_simulated) {
+                if (current_heat <= 15) {
+                    if (!is_heat_simulated) { /* maszyna stanów (przed biegiem / po biegu) */
                         std::vector<Rider*> starters = match.get_riders_for_heat(current_heat);
-                        std::vector<int> pts_before_heat{
-                            starters[0]->get_match_points(), starters[1]->get_match_points(),
-                            starters[2]->get_match_points(), starters[3]->get_match_points(),
-                        };
-                        match.play_heat(current_heat);
-                        last_heat_points = {
-                            starters[0]->get_match_points() - pts_before_heat[0],
-                            starters[1]->get_match_points() - pts_before_heat[1],
-                            starters[2]->get_match_points() - pts_before_heat[2],
-                            starters[3]->get_match_points() - pts_before_heat[3],
-                        };
-                        is_heat_simulated = true;
-                    }
-                    else {
+                        if (starters[0] != nullptr && starters[1] != nullptr && starters[2] != nullptr && starters[3] != nullptr) {
+                            std::vector<int> pts_before_heat{
+                                starters[0]->get_match_points(), starters[1]->get_match_points(),
+                                starters[2]->get_match_points(), starters[3]->get_match_points(),
+                            };
+                            match.play_heat(current_heat);
+                            last_heat_points = {
+                                starters[0]->get_match_points() - pts_before_heat[0],
+                                starters[1]->get_match_points() - pts_before_heat[1],
+                                starters[2]->get_match_points() - pts_before_heat[2],
+                                starters[3]->get_match_points() - pts_before_heat[3],
+                            };
+                            is_heat_simulated = true;
+                        } else {
+                            std::cout << "Uzupelnij sklad biegow nominowanych!\n";
+                        }
+                    } else {
                         current_heat++;
                         is_heat_simulated = false;
                         last_heat_points.clear();
@@ -167,7 +169,7 @@ void Engine::handle_events() {
  * -kolory,
  * -
  * */
-void Engine::render() {
+void Engine::render_match() {
     std::string home_str = "";
     std::string away_str = "";
 
@@ -178,8 +180,15 @@ void Engine::render() {
         int home_bonus = home_rider->get_match_bonus_points();
         int away_bonus = away_rider->get_match_bonus_points();
 
-        std::string h_b_str = (home_bonus > 0) ? "+" + std::to_string(home_bonus) : "";
-        std::string a_b_str = (away_bonus > 0) ? "+" + std::to_string(away_bonus) : "";
+        std::string h_b_str = "";
+        if (home_bonus > 0) {
+            h_b_str = "+" + std::to_string(home_bonus);
+        }
+
+        std::string a_b_str = "";
+        if (away_bonus > 0) {
+            a_b_str = "+" + std::to_string(away_bonus);
+        }
 
         home_str += home_rider->get_name() + " - " + std::to_string(home_rider->get_match_points()) + h_b_str + "\n";
         away_str += away_rider->get_name() + " - " + std::to_string(away_rider->get_match_points()) + a_b_str + "\n";
@@ -226,12 +235,37 @@ void Engine::render() {
                 window.draw(heat_result_text);
 
             } else {
-                red_helmet_text.setString(starters[0]->get_name());
-                blue_helmet_text.setString(starters[1]->get_name());
-                white_helmet_text.setString(starters[2]->get_name());
-                yellow_helmet_text.setString(starters[3]->get_name());
+                if (starters[0] != nullptr) {
+                    red_helmet_text.setString(starters[0]->get_name());
+                } else {
+                    red_helmet_text.setString("Wybierz");
+                }
 
-                sim_button->set_text("Symuluj Bieg");
+                if (starters[1] != nullptr) {
+                    blue_helmet_text.setString(starters[1]->get_name());
+                } else {
+                    blue_helmet_text.setString("Wybierz");
+                }
+
+                if (starters[2] != nullptr) {
+                    white_helmet_text.setString(starters[2]->get_name());
+                } else {
+                    white_helmet_text.setString("Wybierz");
+                }
+
+                if (starters[3] != nullptr) {
+                    yellow_helmet_text.setString(starters[3]->get_name());
+                } else {
+                    yellow_helmet_text.setString("Wybierz");
+                }
+
+                bool ready_to_ride = (starters[0] != nullptr && starters[1] != nullptr && starters[2] != nullptr && starters[3] != nullptr);
+
+                if (ready_to_ride == true) {
+                    sim_button->set_text("Symuluj Bieg");
+                } else {
+                    sim_button->set_text("Uzupelnij Sklad");
+                }
 
                 sf::Text instruction_text;
                 instruction_text.setFont(font);
@@ -282,7 +316,7 @@ void Engine::render() {
     window.draw(away_roster_text);
     window.draw(home_team_name);
     window.draw(away_team_name);
-    /* KONO DO DOKONYWANIA REZERW TAKTYCZNYCH I ZWYKŁYCH*/
+    /* OKNO RENDEROWANE GDY DOKONUJEMY REZERWY*/
     if (active_substitution_helmet != -1) {
         sf::RectangleShape overlay(sf::Vector2f(window.getSize().x, window.getSize().y));
         overlay.setFillColor(sf::Color(0, 0, 0, 200));
@@ -323,4 +357,16 @@ void Engine::render() {
     }
 
     window.display();
+}
+/* BARDZO WAŻNE - JEST TO FUNKCJA KTÓRA DECYDUJE KTÓRY HANDLER BEDZIE WYWOŁANY ZALEŻNIE OD STANU*/
+void Engine::handle_events() {
+    if (current_state == GameState::MATCH) {
+        handle_match_events();
+    }
+}
+/* BARDZO WAŻNE - JEST TO FUNKCJA KTÓRA DECYDUJE CO BEDZIE WYRENDEROWANE NA MONITORZE ZALEŻNIE OD STANU*/
+void Engine::render() {
+    if (current_state == GameState::MATCH) {
+        render_match();
+    }
 }

@@ -7,8 +7,14 @@
 #include "Match.h"
 #include <SFML/Graphics.hpp>
 #include"Button.h"
+enum class GameState {
+    MAIN_MENU,
+    ROSTER_SETUP,
+    MATCH
+};
 
 class Engine {
+    GameState current_state = GameState::MATCH; //do maszyny stanów, aby dzielić wyswietlany obraz na stany
     sf::RenderWindow window;
     Match& match;
     sf::Font font;
@@ -17,8 +23,10 @@ class Engine {
     std::vector<int> last_heat_points;
     int active_substitution_helmet = -1;
     Button* sim_button;
-    void handle_events();
+    void handle_match_events();
+    void render_match();
     void render();
+    void handle_events();
     sf::Text score_text;
     sf::Text heat_text;
     sf::Text home_roster_text;

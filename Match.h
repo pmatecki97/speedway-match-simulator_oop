@@ -31,7 +31,7 @@ class Match {
         {0, 4, 0, 4}  // Bieg 15: Nominowany (Tymczasowe indeksy)
     };
 public:
-    Match(Team& home_team,Team& away_team);
+    Match(Team &home_team, Team &away_team);
     void play_heat(int heat_number);
     void play_match();
     int get_home_match_points() const;
