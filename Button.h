@@ -14,6 +14,7 @@ public:
     Button(float x, float y, float width, float height, sf::Font& font, std::string btn_text);
     void render(sf::RenderWindow& window);
     bool is_clicked(sf::RenderWindow& window);
+    void set_text(std::string new_text);
 };
 
 

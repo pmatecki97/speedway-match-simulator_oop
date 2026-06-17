@@ -57,14 +57,26 @@ void Heat::simulate_race() {
         Rider* current_rider = results[rider_idx].second;
         int earned_points = points_award[rider_idx];
 
-
         current_rider->add_match_points(earned_points);
-
 
         if (current_rider == red || current_rider == blue) {
             home_points += earned_points;
         } else {
             away_points += earned_points;
+        }
+
+        if (earned_points == 1 || earned_points == 2) {
+            bool is_home = (current_rider == red || current_rider == blue);
+
+            for (int higher_idx = rider_idx + 1; higher_idx < 4; higher_idx++) {
+                Rider* higher_rider = results[higher_idx].second;
+                bool is_higher_home = (higher_rider == red || higher_rider == blue);
+
+                if (is_home == is_higher_home) {
+                    current_rider->add_match_bonus_points(1);
+                    break;
+                }
+            }
         }
     }
 }

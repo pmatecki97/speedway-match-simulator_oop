@@ -13,6 +13,9 @@ class Engine {
     Match& match;
     sf::Font font;
     int current_heat =1;
+    bool is_heat_simulated=false;
+    std::vector<int> last_heat_points;
+    int active_substitution_helmet = -1;
     Button* sim_button;
     void handle_events();
     void render();

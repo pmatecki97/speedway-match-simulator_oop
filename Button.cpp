@@ -30,3 +30,10 @@ void Button::render(sf::RenderWindow &window) {
     window.draw(shape);
     window.draw(text);
 }
+/* funkcja zmienia tekst wyswietlany na przycisku i wyśrodkowuje go*/
+void Button::set_text(std::string new_text) {
+    text.setString(new_text);
+    sf::FloatRect textRect = text.getLocalBounds();
+    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    text.setPosition(sf::Vector2f(shape.getPosition().x + shape.getSize().x / 2.0f, shape.getPosition().y + shape.getSize().y / 2.0f));
+}

@@ -40,3 +40,27 @@ int Rider::add_match_points(int points) {
 int Rider::get_match_points() const {
     return match_points;
 }
+/* zwiększa ilość biegów o 1*/
+void Rider::add_heat_start() {
+    heat_starts_count++;
+}
+/* getter przejechanych wyścigów przez zawodnika */
+int Rider::get_heat_starts_count() const {
+    return heat_starts_count;
+}
+/* sprawdza czy zawodnik był użyty do rezerwy taktycznej*/
+bool Rider::get_used_as_tactical() const {
+    return used_as_tactical;
+}
+/* ustawia, że zawodnik został już użyty do rezerwy taktycznej*/
+void Rider::set_used_as_tactical() {
+    used_as_tactical = true;
+}
+/* dodaje punkt bonusowy zawodnikowi*/
+void Rider::add_match_bonus_points(int points) {
+    match_bonus_points += points;
+}
+/* getter punktóœ bonusowych zawodnika*/
+int Rider::get_match_bonus_points() const {
+    return match_bonus_points;
+}

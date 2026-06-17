@@ -39,6 +39,9 @@ public:
     Team& get_home_team();
     Team& get_away_team();
     std::vector<Rider*> get_riders_for_heat(int heat_number);
+    void make_substitution(int heat_number, int helmet_index, int new_rider_idx, bool is_tactical);/* helmet_index (1-C 2-N 3-B 4-Z)
+    new_rider_index - numer zawodnika z wektora drużyny*/
+    bool is_substitution_valid(int heat_number, int helmet_index, int new_rider_idx,bool is_tactical);
 };
 
 

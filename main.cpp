@@ -7,10 +7,10 @@ int main() {
     srand(time(NULL));
 
     Team home_team("TEAM 1");
-    Team away_team("Team 2");
+    Team away_team("TEAM 2");
 
     home_team.load_from_file("unia_leszno.txt");
-    away_team.load_from_file("wlokniarz_czestochowa.txt");
+    away_team.load_from_file("apator_torun.txt");
 
 
     Match match(home_team, away_team);

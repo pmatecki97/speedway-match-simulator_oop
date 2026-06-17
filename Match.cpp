@@ -30,6 +30,10 @@ void Match::play_heat(int heat_number) {
     Rider *blue = home_team.get_rider_ptr(match_schedule[row][1]);
     Rider *white = away_team.get_rider_ptr(match_schedule[row][2]);
     Rider *yellow = away_team.get_rider_ptr(match_schedule[row][3]);
+    red->add_heat_start();
+    blue->add_heat_start();
+    yellow->add_heat_start();
+    white->add_heat_start();
     Heat current_heat(red,blue,white,yellow);//KONSTRUKTOR
     current_heat.simulate_race();
     away_score += current_heat.get_away_points();
@@ -62,4 +66,81 @@ std::vector<Rider *> Match::get_riders_for_heat(int heat_number) {
     starting_lineup.push_back(away_team.get_rider_ptr(a2_idx));
 
     return starting_lineup;
+}
+/* funkcja odpowiada za zmianę zawodnika w macierzy meczu (taktyczne i zwykłe rezerwy)*/
+void Match::make_substitution(int heat_number, int helmet_index, int new_rider_idx, bool is_tactical) {
+    if (heat_number >= 1 && heat_number <= 15 && helmet_index >= 0 && helmet_index <= 3) {
+        match_schedule[heat_number - 1][helmet_index] = new_rider_idx;
+
+        if (is_tactical) {
+            if (helmet_index == 0 || helmet_index == 1) {
+                home_team.get_rider_ptr(new_rider_idx)->set_used_as_tactical();
+            } else {
+                away_team.get_rider_ptr(new_rider_idx)->set_used_as_tactical();
+            }
+        }
+    }
+}
+/* funkcja sprawdza czy rezerwa jest mozliwa do przeprowadzenia (zwykła i taktyczna) */
+bool Match::is_substitution_valid(int heat_number, int helmet_index, int new_rider_idx, bool is_tactical) {
+    if (heat_number<1 || heat_number>15 || helmet_index<0 ||helmet_index>3) {
+        return false;
+    }
+    if (helmet_index == 0 || helmet_index == 1) {
+        if (match_schedule[heat_number-1][0] == new_rider_idx || match_schedule[heat_number-1][1] == new_rider_idx) {
+            return false;
+        }
+        int scheduled_starts = 0;
+        for (int i = 0; i < 15; i++) {
+            if (match_schedule[i][0] == new_rider_idx || match_schedule[i][1] == new_rider_idx) {
+                scheduled_starts++;
+            }
+        }
+        Rider* sub_rider = home_team.get_rider_ptr(new_rider_idx);
+        if (!is_tactical) {
+            if (scheduled_starts>=5) {
+                return false;
+            }
+        }
+        if (is_tactical) {
+            if (sub_rider->get_used_as_tactical()) {
+                return false;
+            }
+            if (scheduled_starts>=6) {
+                return false;
+            }
+            if (away_score-home_score<6) {
+                return false;
+            }
+        }
+    }
+    else if (helmet_index == 2 || helmet_index == 3) {
+        if (match_schedule[heat_number-1][2] == new_rider_idx || match_schedule[heat_number-1][3] == new_rider_idx) {
+            return false;
+        }
+        int scheduled_starts = 0;
+        for (int i = 0; i < 15; i++) {
+            if (match_schedule[i][2] == new_rider_idx || match_schedule[i][3] == new_rider_idx) {
+                scheduled_starts++;
+            }
+        }
+        Rider* sub_rider = away_team.get_rider_ptr(new_rider_idx);
+        if (!is_tactical) {
+            if (scheduled_starts>=5) {
+                return false;
+            }
+        }
+        if (is_tactical) {
+            if (sub_rider->get_used_as_tactical()) {
+                return false;
+            }
+            if (scheduled_starts>=6) {
+                return false;
+            }
+            if (home_score-away_score<6) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
