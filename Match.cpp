@@ -3,46 +3,48 @@
 //
 
 #include "Match.h"
+/* konstruktor*/
 Match::Match(Team &home_team, Team &away_team):home_team(home_team),away_team(away_team) {
     home_score = 0;
     away_score = 0;
 }
-
+/* getter punktów druzyny gości*/
 int Match::get_away_match_points() const {
     return away_score;
 }
-
+/* getter punktów drużyny gospodarzy*/
 int Match::get_home_match_points() const {
     return home_score;
 }
-
+/* funkcja uruchamia petle 15 wyścigów*/
 void Match::play_match() {
     int heat_nr;
     for (heat_nr=1;heat_nr<=15;heat_nr++) {
         play_heat(heat_nr);
     }
 }
+/* funkcja uruchamia wyścig (MACIERZ MMECZU JEST TABLICĄ DWUWYMIAROWĄ ROW - NR WYSCIGU, DRUGA WSPOLRZEDNA TO ZAWODNIK Z KONKRETNYMJ NUMEREM W DRUZYNIE)*/
 void Match::play_heat(int heat_number) {
     int row = heat_number - 1;
     Rider *red = home_team.get_rider_ptr(match_schedule[row][0]);
     Rider *blue = home_team.get_rider_ptr(match_schedule[row][1]);
     Rider *white = away_team.get_rider_ptr(match_schedule[row][2]);
     Rider *yellow = away_team.get_rider_ptr(match_schedule[row][3]);
-    Heat current_heat(red,blue,white,yellow);
+    Heat current_heat(red,blue,white,yellow);//KONSTRUKTOR
     current_heat.simulate_race();
     away_score += current_heat.get_away_points();
     home_score += current_heat.get_home_points();
     heats.push_back(current_heat);
 }
-
+/* getter wskaźnika na druzyne gości*/
 Team &Match::get_away_team() {
     return away_team;
 };
-
+/* getter wskaźnika na druzyne gospodarzy+ */
 Team &Match::get_home_team() {
     return home_team;
 };
-
+/* pobiera zawodników (ich numery) z macierzy wyścigów dodaje ich do wektora konkretnego wyścigu (przez wskaznik) i zwraca wektor danego wyścigu*/
 std::vector<Rider *> Match::get_riders_for_heat(int heat_number) {
     if (heat_number<1 || heat_number>15) {
         return {};

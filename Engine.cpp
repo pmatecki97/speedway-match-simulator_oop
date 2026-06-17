@@ -5,7 +5,15 @@
 #include "Engine.h"
 #include <functional>
 #include<iostream>
-
+/* KONSTRUKTOR CAŁEJ ROZGRYWKI*/
+/*Co robi:
+ * -inicjalizuje okno rozgrywki,
+ * -inicjalizuje przyciskk symuluj bieg (z wszystkimi jego parametrami),
+ * -inicjalizuje teksty druzyn(nazwy);
+ * -inicjalizuje teksty składów;
+ * -inicjalizuje teksty wyniku;
+ * -inicjalizuje teksty zawodnikow z danego biegu,
+ * */
 Engine::Engine(Match &match):match(match),window(sf::VideoMode::getDesktopMode(),"Symulator Zuzlowy",sf::Style::Fullscreen) {
     if (!font.loadFromFile("arial.ttf")) {
         std::cout<<"Nie wczytano czcionki";
@@ -50,18 +58,21 @@ Engine::Engine(Match &match):match(match),window(sf::VideoMode::getDesktopMode()
     yellow_helmet_text.setCharacterSize(30);
     yellow_helmet_text.setFillColor(sf::Color::Yellow);
 }
-
+/*destruktor*/
 Engine::~Engine() {
     delete sim_button;
 }
-
+/*funkcja tworząca okno i uruchamiająca rozgrywke */
 void Engine::run() {
     while (window.isOpen()) {
         handle_events();
         render();
     }
 }
-
+/* funkcja zajmuje sie obsługa zdarzeń:
+ * -zamknięcie okna escape lub kliknięcie x,
+ * -kliknięcie w przycisk uruchamiający kolejny bieg (w tym zmienia current heat o 1);
+ * */
 void Engine::handle_events() {
     sf::Event event;
     while (window.pollEvent(event)){
@@ -81,11 +92,17 @@ void Engine::handle_events() {
         }
     }
 }
-
+/* CO ROBI FUNKCJA:
+ * -wypisuje zawodnikow i punkty,
+ * -ustawia czcionki,
+ * -pozycje,
+ * -kolory,
+ * -
+ * */
 void Engine::render() {
     std::string home_str = "";
     std::string away_str = "";
-
+    /* PĘTLA WYPISUJĄCA ZAWODNIKOW I PUNKTY*/
     for (int rider_idx = 0; rider_idx < 7; rider_idx++) {
         Rider* home_rider  = match.get_home_team().get_rider_ptr(rider_idx);
         Rider* away_rider  = match.get_away_team().get_rider_ptr(rider_idx);

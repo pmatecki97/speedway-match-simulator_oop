@@ -6,22 +6,24 @@
 #include<vector>
 #include<algorithm>
 #include<cstdlib>
+/* konstruktor wyscigu przyjmujący wskaznik na zawodnika*/
 Heat::Heat(Rider *red, Rider *blue, Rider *white, Rider *yellow):red(red),blue(blue),white(white),yellow(yellow) {
     home_points =0;
     away_points =0;
 }
-
+/* getter punktów druzyny gości W DANYM WYSCIGU*/
 int Heat::get_away_points() const {
     return away_points;
 }
-
+/* getter punktów drużyny gospodarzy W DANYM WYŚIGU*/
 int Heat::get_home_points() const {
     return home_points;
 }
-
+/* BARDZO WAŻNA FUNKCJA !!!!!!*/
+/* WYZNACZA MOC ZAWODNKIA W DANYM BIEGU UWZGLEDNIAJĄC ZDARZENIA LOSOWE = 2% I JEGO JAZDĘ NA TORZE*/
 int Heat::calculate_rider_score(Rider* rider) {
     int misfortune = rand() %100;
-    if (misfortune<5) {
+    if (misfortune<2) {
         return  -999;
     }
     else {
@@ -29,7 +31,9 @@ int Heat::calculate_rider_score(Rider* rider) {
         return  rider->get_strength() + performance_on_track;
     }
 }
-
+/* BARDZO WAŻNA FUNKCJA !!!*/
+/* FUNKCJA SYMULUJE WYŚCIG POBIERAJĄC PUNKTOWY WSPÓŁCZYNNIK MOCY ZAWODNIKÓW I SORTUJĄC PARY (PUNKTY MOCY ZAWODNIKA,WSKAZNIK NA ZAWODNIKA)
+ * OD NAJMNIEJSZEGO DO NAJWIĘKSZEGO ZALEZNIE OD PUNKTÓW MOCY*/
 void Heat::simulate_race() {
     int score_red = calculate_rider_score(red);
     int score_blue = calculate_rider_score(blue);
