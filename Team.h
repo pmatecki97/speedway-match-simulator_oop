@@ -22,6 +22,7 @@ public:
     const std::vector<Rider>& get_line_up() const;
     Rider* get_rider_ptr(int index);
     void load_from_file(std::string filename);
+    void swap_riders(int idx1, int idx2);
 };
 
 

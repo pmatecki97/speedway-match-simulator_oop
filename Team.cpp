@@ -53,3 +53,9 @@ void Team::load_from_file(std::string filename) {
     }
     file.close();
 }
+/* zmienia miejscami dwa obiekty w wektorze czyli zmienia numer zawodnika */
+void Team::swap_riders(int idx1, int idx2) {
+    {
+        std::swap(line_up[idx1],line_up[idx2]);
+    }
+}

@@ -366,6 +366,9 @@ void Engine::handle_events() {
     else if (current_state == GameState::MAIN_MENU) {
         handle_menu_events();
     }
+    else if (current_state == GameState::LINE_UP_SETUP) {
+        handle_line_up_events();
+    }
 }
 /* BARDZO WAŻNE - JEST TO FUNKCJA KTÓRA DECYDUJE CO BEDZIE WYRENDEROWANE NA MONITORZE ZALEŻNIE OD STANU*/
 void Engine::render() {
@@ -374,6 +377,9 @@ void Engine::render() {
     }
     else if (current_state == GameState::MAIN_MENU) {
         render_menu();
+    }
+    else if (current_state == GameState::LINE_UP_SETUP) {
+        render_line_up();
     }
 }
 /* funkcja odpowiada za wyśwsietalanie menu głównego*/
@@ -532,7 +538,7 @@ void Engine::handle_menu_events() {
                 match.get_home_team().load_from_file(available_files[selected_home_idx]);
                 match.get_away_team().load_from_file(available_files[selected_away_idx]);
 
-                current_state = GameState::MATCH;
+                current_state = GameState::LINE_UP_SETUP;
             }
         }
 
@@ -549,8 +555,140 @@ void Engine::handle_menu_events() {
                 match.get_home_team().load_from_file(available_files[selected_home_idx]);
                 match.get_away_team().load_from_file(available_files[selected_away_idx]);
 
-                current_state = GameState::MATCH;
+                current_state = GameState::LINE_UP_SETUP;
             }
         }
     }
+}
+/* funkcja zajmuje się obsługą zdarzeń dla stanu zmiany numerów startowych zawodników */
+void Engine::handle_line_up_events() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) window.close();
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) window.close();
+        // ENTER ZATWIERDZA KONFIGURACJĘ
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Enter) {
+                current_state = GameState::MATCH;
+            } // LEWY I PRAWY PRZYCISK TO WYBÓR DRUŻYNY W KTÓREJ ZMIENIAMY NUMERY STARTOWE
+            else if (event.key.code == sf::Keyboard::Left) {
+                line_up_active_team = 1;
+                line_up_selected_rider = -1;
+            }
+            else if (event.key.code == sf::Keyboard::Right) {
+                line_up_active_team = 2;
+                line_up_selected_rider = -1;
+            }
+            else {
+                int pressed_idx = -1;
+                if (event.key.code == sf::Keyboard::Num1) pressed_idx = 0;
+                else if (event.key.code == sf::Keyboard::Num2) pressed_idx = 1;
+                else if (event.key.code == sf::Keyboard::Num3) pressed_idx = 2;
+                else if (event.key.code == sf::Keyboard::Num4) pressed_idx = 3;
+                else if (event.key.code == sf::Keyboard::Num5) pressed_idx = 4;
+                else if (event.key.code == sf::Keyboard::Num6) pressed_idx = 5;
+                else if (event.key.code == sf::Keyboard::Num7) pressed_idx = 6;
+
+                if (pressed_idx != -1) {
+                    if (line_up_selected_rider == -1) {
+                        line_up_selected_rider = pressed_idx; // WYBIERAMY ZAWODNIKA PIERWSZEGO
+                    } else {
+                        if (line_up_active_team == 1) { // WYBIERAMY ZAWODNIKA DRUGIEGA
+                            match.get_home_team().swap_riders(line_up_selected_rider, pressed_idx);
+                        } else {
+                            match.get_away_team().swap_riders(line_up_selected_rider, pressed_idx);
+                        }
+
+                        line_up_selected_rider = -1;
+                    }
+                }
+            }
+        }
+    }
+}
+/* funkcja odpowiada za wyświetalnie okna ustawiania numerów startowych */
+void Engine::render_line_up() {
+    window.clear(sf::Color(20, 20, 20));
+    /* TYTUŁ SCENY*/
+    sf::Text title;
+    title.setFont(font);
+    title.setCharacterSize(60);
+    title.setFillColor(sf::Color::White);
+    title.setString("USTALANIE SKLADOW");
+    sf::FloatRect tRect = title.getLocalBounds();
+    title.setOrigin(tRect.left + tRect.width / 2.0f, tRect.top + tRect.height / 2.0f);
+    title.setPosition(sf::Vector2f(960, 80));
+    window.draw(title);
+    /* TEKST PODPOWIADAJĄCY JAK DOKONAĆ USTAWIENIA SKŁADU */
+    sf::Text inst;
+    inst.setFont(font);
+    inst.setCharacterSize(25);
+    inst.setFillColor(sf::Color::Cyan);
+    inst.setString("<- -> Wybierz druzyne | Klawisze [1-7] wybieraja zawodnika. Wcisnij dwa numery aby zamienic ich miejscami.");
+    sf::FloatRect iRect = inst.getLocalBounds();
+    inst.setOrigin(iRect.left + iRect.width / 2.0f, iRect.top + iRect.height / 2.0f);
+    inst.setPosition(sf::Vector2f(960, 150));
+    window.draw(inst);
+    /* RYSOWANIE ZESPOŁU GOSPODARZY */
+    sf::Text h_title;
+    h_title.setFont(font);
+    h_title.setCharacterSize(40);
+    h_title.setString(match.get_home_team().get_team_name());
+    h_title.setFillColor(line_up_active_team == 1 ? sf::Color::White : sf::Color(100, 100, 100)); // jesli aktywowana jest zmiana na danym zespole to swieci sie na biało
+    h_title.setPosition(300, 250);
+    window.draw(h_title);
+
+    for (int i = 0; i < 7; i++) {
+        sf::Text r_text;
+        r_text.setFont(font);
+        r_text.setCharacterSize(35);
+        r_text.setString(std::to_string(i + 1) + ". " + match.get_home_team().get_rider_ptr(i)->get_name());
+
+        if (line_up_active_team == 1) {
+            if (line_up_selected_rider == i) r_text.setFillColor(sf::Color::Green);
+            else r_text.setFillColor(sf::Color::Yellow);
+        } else {
+            r_text.setFillColor(sf::Color(100, 100, 100));
+        }
+
+        r_text.setPosition(300, 350 + i * 60);
+        window.draw(r_text);
+    }
+    /* RYSOWANIE ZESPOŁU GOŚCI */
+    sf::Text a_title;
+    a_title.setFont(font);
+    a_title.setCharacterSize(40);
+    a_title.setString(match.get_away_team().get_team_name());
+    a_title.setFillColor(line_up_active_team == 2 ? sf::Color::White : sf::Color(100, 100, 100));
+    a_title.setPosition(1200, 250);
+    window.draw(a_title);
+
+    for (int i = 0; i < 7; i++) {
+        sf::Text r_text;
+        r_text.setFont(font);
+        r_text.setCharacterSize(35);
+        r_text.setString(std::to_string(i + 9) + ". " + match.get_away_team().get_rider_ptr(i)->get_name());
+
+        if (line_up_active_team == 2) {
+            if (line_up_selected_rider == i) r_text.setFillColor(sf::Color::Green);
+            else r_text.setFillColor(sf::Color::Yellow);
+        } else {
+            r_text.setFillColor(sf::Color(100, 100, 100));
+        }
+
+        r_text.setPosition(1200, 350 + i * 60);
+        window.draw(r_text);
+    }
+    /* TEKST INFORMACYJNY */
+    sf::Text start_msg;
+    start_msg.setFont(font);
+    start_msg.setCharacterSize(40);
+    start_msg.setFillColor(sf::Color(50, 205, 50));
+    start_msg.setString("Nacisnij ENTER aby przejsc do 1. biegu!");
+    sf::FloatRect smRect = start_msg.getLocalBounds();
+    start_msg.setOrigin(smRect.left + smRect.width / 2.0f, smRect.top + smRect.height / 2.0f);
+    start_msg.setPosition(sf::Vector2f(960, 950));
+    window.draw(start_msg);
+
+    window.display();
 }

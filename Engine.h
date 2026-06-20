@@ -9,7 +9,7 @@
 #include"Button.h"
 enum class GameState {
     MAIN_MENU,
-    ROSTER_SETUP,
+    LINE_UP_SETUP,
     MATCH
 };
 
@@ -29,6 +29,10 @@ class Engine {
     void render_menu();
     void handle_events();
     void handle_menu_events();
+    void handle_line_up_events();
+    void render_line_up();
+    int line_up_active_team = 1; //  1 - gospodarze 2 - goście
+    int line_up_selected_rider = -1; // -1 - nikogo nie kliknęliśmy
     sf::Text score_text;
     sf::Text heat_text;
     sf::Text home_roster_text;
