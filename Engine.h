@@ -39,6 +39,10 @@ class Engine {
     sf::Text blue_helmet_text;
     sf::Text white_helmet_text;
     sf::Text yellow_helmet_text;
+    std::vector<std::string> available_files = {
+        "unia_leszno.txt", "sparta_wroclaw.txt", "motor_lublin.txt", "apator_torun.txt",
+        "stal_gorzow.txt", "wlokniarz_czestochowa.txt", "gkm_grudziadz.txt", "falubaz_zielona_gora.txt"
+    };
     std::vector<std::string> available_teams = { //wektor drużyn potrzeby do menu głównego
         "Unia Leszno", "Sparta Wroclaw", "Motor Lublin", "Apator Torun",
         "Stal Gorzow", "Wlokniarz Czestochowa", "GKM Grudziadz", "Falubaz Zielona Gora"

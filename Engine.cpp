@@ -480,6 +480,7 @@ void Engine::render_menu() {
 
     window.display();
 }
+
 /* funkcja obsługuje zdarzenia w menu głównym */
 void Engine::handle_menu_events() {
     sf::Event event;
@@ -490,41 +491,65 @@ void Engine::handle_menu_events() {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             window.close();
         }
+
         if (event.type == sf::Event::KeyPressed) {
             int n = available_teams.size();
-            if (event.key.code == sf::Keyboard::Num1){
+
+            if (event.key.code == sf::Keyboard::Num1) {
                 active_team_selection = 1;
             }
             else if (event.key.code == sf::Keyboard::Num2) {
                 active_team_selection = 2;
             }
             else if (event.key.code == sf::Keyboard::Right) {
-                if (active_team_selection==1) {
+                if (active_team_selection == 1) {
                     do {
-                        selected_home_idx  = (selected_home_idx + 1 + n) % n;
-                    }
-                    while (selected_home_idx==selected_away_idx); // wybryane drużyny nie mogą byc takie same
+                        selected_home_idx = (selected_home_idx + 1) % n;
+                    } while (selected_home_idx == selected_away_idx);
                 }
-                if (active_team_selection==2) {
+                else if (active_team_selection == 2) {
                     do {
-                        selected_away_idx  = (selected_away_idx + 1 + n) % n;
-                    }
-                    while (selected_away_idx==selected_home_idx); // wybryane drużyny nie mogą byc takie same
+                        selected_away_idx = (selected_away_idx + 1) % n;
+                    } while (selected_away_idx == selected_home_idx);
                 }
             }
             else if (event.key.code == sf::Keyboard::Left) {
-                if (active_team_selection==1) {
+                if (active_team_selection == 1) {
                     do {
-                        selected_home_idx  = (selected_home_idx - 1 + n) % n;
-                    }
-                    while (selected_home_idx==selected_away_idx); // wybryane drużyny nie mogą byc takie same
+                        selected_home_idx = (selected_home_idx - 1 + n) % n;
+                    } while (selected_home_idx == selected_away_idx);
                 }
-                if (active_team_selection==2) {
+                else if (active_team_selection == 2) {
                     do {
-                        selected_away_idx  = (selected_away_idx - 1 + n) % n;
-                    }
-                    while (selected_away_idx==selected_home_idx); // wybryane drużyny nie mogą byc takie same
+                        selected_away_idx = (selected_away_idx - 1 + n) % n;
+                    } while (selected_away_idx == selected_home_idx);
                 }
+            }
+            else if (event.key.code == sf::Keyboard::Enter) {
+                home_team_name.setString(available_teams[selected_home_idx]);
+                away_team_name.setString(available_teams[selected_away_idx]);
+
+                match.get_home_team().load_from_file(available_files[selected_home_idx]);
+                match.get_away_team().load_from_file(available_files[selected_away_idx]);
+
+                current_state = GameState::MATCH;
+            }
+        }
+
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+            sf::Vector2f world_pos = window.mapPixelToCoords(mouse_pos);
+
+            sf::FloatRect start_btn_rect(735, 800, 450, 100);
+
+            if (start_btn_rect.contains(world_pos)) {
+                home_team_name.setString(available_teams[selected_home_idx]);
+                away_team_name.setString(available_teams[selected_away_idx]);
+
+                match.get_home_team().load_from_file(available_files[selected_home_idx]);
+                match.get_away_team().load_from_file(available_files[selected_away_idx]);
+
+                current_state = GameState::MATCH;
             }
         }
     }
