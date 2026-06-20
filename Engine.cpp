@@ -363,10 +363,169 @@ void Engine::handle_events() {
     if (current_state == GameState::MATCH) {
         handle_match_events();
     }
+    else if (current_state == GameState::MAIN_MENU) {
+        handle_menu_events();
+    }
 }
 /* BARDZO WAŻNE - JEST TO FUNKCJA KTÓRA DECYDUJE CO BEDZIE WYRENDEROWANE NA MONITORZE ZALEŻNIE OD STANU*/
 void Engine::render() {
     if (current_state == GameState::MATCH) {
         render_match();
+    }
+    else if (current_state == GameState::MAIN_MENU) {
+        render_menu();
+    }
+}
+/* funkcja odpowiada za wyśwsietalanie menu głównego*/
+void Engine::render_menu() {
+    window.clear(sf::Color(30,30,30));
+    /* TYTUŁ */
+    sf::Text title_text;
+    title_text.setFont(font);
+    title_text.setCharacterSize(90);
+    title_text.setFillColor(sf::Color::White);
+    title_text.setString("SYMULATOR ZUZLOWY");
+    sf::FloatRect titleRect = title_text.getLocalBounds();
+    title_text.setOrigin(titleRect.left + titleRect.width / 2.0f, titleRect.top + titleRect.height / 2.0f);
+    title_text.setPosition(sf::Vector2f(960, 150));
+    window.draw(title_text);
+    /* TRYB GRY*/
+    sf::Text mode_text;
+    mode_text.setFont(font);
+    mode_text.setCharacterSize(45);
+    mode_text.setFillColor(sf::Color(200, 200, 200));
+    mode_text.setString("Tryb: Gracz vs Komputer");
+    sf::FloatRect modeRect = mode_text.getLocalBounds();
+    mode_text.setOrigin(modeRect.left + modeRect.width / 2.0f, modeRect.top + modeRect.height / 2.0f);
+    mode_text.setPosition(sf::Vector2f(960, 300));
+    window.draw(mode_text);
+    /* TEKST PODPOWIADAJĄCY JAK USTAWIĆ DRUŻYNY*/
+    sf::Text inst_text;
+    inst_text.setFont(font);
+    inst_text.setCharacterSize(30);
+    inst_text.setFillColor(sf::Color::Cyan);
+    inst_text.setString("Wcisnij [1] aby edytowac Gospodarza | Wcisnij [2] aby edytowac Goscia | (Nawigacja strzalkami <- ->)");
+    sf::FloatRect instRect = inst_text.getLocalBounds();
+    inst_text.setOrigin(instRect.left + instRect.width / 2.0f, instRect.top + instRect.height / 2.0f);
+    inst_text.setPosition(sf::Vector2f(960, 380));
+    window.draw(inst_text);
+    /* DRUŻYNY */
+    sf::Text home_header;
+    home_header.setFont(font);
+    home_header.setCharacterSize(35);
+    home_header.setFillColor(sf::Color(150, 150, 150));
+    home_header.setString("HOME TEAM");
+    sf::FloatRect hhRect = home_header.getLocalBounds();
+    home_header.setOrigin(hhRect.left + hhRect.width / 2.0f, hhRect.top + hhRect.height / 2.0f);
+    home_header.setPosition(sf::Vector2f(400, 450));
+    window.draw(home_header);
+    /* GOSPODARZE */
+    sf::Text home_team;
+    home_team.setFont(font);
+    home_team.setCharacterSize(55);
+    if (active_team_selection == 1) {
+        home_team.setString("<  " + available_teams[selected_home_idx] + "  >");
+        home_team.setFillColor(sf::Color(50, 205, 50));
+    } else {
+        home_team.setString(available_teams[selected_home_idx]);
+        home_team.setFillColor(sf::Color(255, 215, 0));
+    }
+    sf::FloatRect home_team_rectangle = home_team.getLocalBounds();
+    home_team.setOrigin(home_team_rectangle.left + home_team_rectangle.width / 2.0f, home_team_rectangle.top + home_team_rectangle.height / 2.0f);
+    home_team.setPosition(sf::Vector2f(400, 580));
+    window.draw(home_team);
+
+    sf::Text away_header;
+    away_header.setFont(font);
+    away_header.setCharacterSize(35);
+    away_header.setFillColor(sf::Color(150, 150, 150));
+    away_header.setString("AWAY TEAM");
+    sf::FloatRect ahRect = away_header.getLocalBounds();
+    away_header.setOrigin(ahRect.left + ahRect.width / 2.0f, ahRect.top + ahRect.height / 2.0f);
+    away_header.setPosition(sf::Vector2f(1520, 450));
+    window.draw(away_header);
+    /* GOŚCIE */
+    sf::Text away_team;
+    away_team.setFont(font);
+    away_team.setCharacterSize(55);
+    if (active_team_selection == 2) {
+        away_team.setString("<  " + available_teams[selected_away_idx] + "  >");
+        away_team.setFillColor(sf::Color(50, 205, 50));
+    } else {
+        away_team.setString(available_teams[selected_away_idx]);
+        away_team.setFillColor(sf::Color(255, 215, 0));
+    }
+    sf::FloatRect away_team_rectangle = away_team.getLocalBounds();
+    away_team.setOrigin(away_team_rectangle.left + away_team_rectangle.width / 2.0f, away_team_rectangle.top + away_team_rectangle.height / 2.0f);
+    away_team.setPosition(sf::Vector2f(1520, 580));
+    window.draw(away_team);
+    /* PRZYCISK STARTU*/
+    sf::RectangleShape start_button(sf::Vector2f(450, 100));
+    start_button.setFillColor(sf::Color(34, 139, 34));
+    start_button.setOutlineThickness(4);
+    start_button.setOutlineColor(sf::Color(50, 205, 50));
+    start_button.setOrigin(225, 50);
+    start_button.setPosition(960, 850);
+    window.draw(start_button);
+    /* TEKST NA PRZYCISKU*/
+    sf::Text start_text;
+    start_text.setFont(font);
+    start_text.setCharacterSize(50);
+    start_text.setFillColor(sf::Color::White);
+    start_text.setString("START MECZU");
+    sf::FloatRect sRect = start_text.getLocalBounds();
+    start_text.setOrigin(sRect.left + sRect.width / 2.0f, sRect.top + sRect.height / 2.0f);
+    start_text.setPosition(sf::Vector2f(960, 835));
+    window.draw(start_text);
+
+    window.display();
+}
+/* funkcja obsługuje zdarzenia w menu głównym */
+void Engine::handle_menu_events() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        }
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+            window.close();
+        }
+        if (event.type == sf::Event::KeyPressed) {
+            int n = available_teams.size();
+            if (event.key.code == sf::Keyboard::Num1){
+                active_team_selection = 1;
+            }
+            else if (event.key.code == sf::Keyboard::Num2) {
+                active_team_selection = 2;
+            }
+            else if (event.key.code == sf::Keyboard::Right) {
+                if (active_team_selection==1) {
+                    do {
+                        selected_home_idx  = (selected_home_idx + 1 + n) % n;
+                    }
+                    while (selected_home_idx==selected_away_idx); // wybryane drużyny nie mogą byc takie same
+                }
+                if (active_team_selection==2) {
+                    do {
+                        selected_away_idx  = (selected_away_idx + 1 + n) % n;
+                    }
+                    while (selected_away_idx==selected_home_idx); // wybryane drużyny nie mogą byc takie same
+                }
+            }
+            else if (event.key.code == sf::Keyboard::Left) {
+                if (active_team_selection==1) {
+                    do {
+                        selected_home_idx  = (selected_home_idx - 1 + n) % n;
+                    }
+                    while (selected_home_idx==selected_away_idx); // wybryane drużyny nie mogą byc takie same
+                }
+                if (active_team_selection==2) {
+                    do {
+                        selected_away_idx  = (selected_away_idx - 1 + n) % n;
+                    }
+                    while (selected_away_idx==selected_home_idx); // wybryane drużyny nie mogą byc takie same
+                }
+            }
+        }
     }
 }

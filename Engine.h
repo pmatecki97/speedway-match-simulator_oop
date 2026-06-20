@@ -14,7 +14,7 @@ enum class GameState {
 };
 
 class Engine {
-    GameState current_state = GameState::MATCH; //do maszyny stanów, aby dzielić wyswietlany obraz na stany
+    GameState current_state = GameState::MAIN_MENU; //do maszyny stanów, aby dzielić wyswietlany obraz na stany
     sf::RenderWindow window;
     Match& match;
     sf::Font font;
@@ -26,7 +26,9 @@ class Engine {
     void handle_match_events();
     void render_match();
     void render();
+    void render_menu();
     void handle_events();
+    void handle_menu_events();
     sf::Text score_text;
     sf::Text heat_text;
     sf::Text home_roster_text;
@@ -37,6 +39,13 @@ class Engine {
     sf::Text blue_helmet_text;
     sf::Text white_helmet_text;
     sf::Text yellow_helmet_text;
+    std::vector<std::string> available_teams = { //wektor drużyn potrzeby do menu głównego
+        "Unia Leszno", "Sparta Wroclaw", "Motor Lublin", "Apator Torun",
+        "Stal Gorzow", "Wlokniarz Czestochowa", "GKM Grudziadz", "Falubaz Zielona Gora"
+    };
+    int selected_home_idx = 0;
+    int selected_away_idx = 1;
+    int active_team_selection = 0; // 0 - nic, 1- gospodarze 2- goście
 public:
     Engine(Match &match);
     ~Engine(); //destruktor
