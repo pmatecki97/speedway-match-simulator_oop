@@ -5,7 +5,9 @@
 #ifndef SPEEDWAY_MW_11_292745_HEAT_H
 #define SPEEDWAY_MW_11_292745_HEAT_H
 #include"Rider.h"
-
+#include<vector>
+#include<algorithm>
+#include<cstdlib>
 class Heat {
     Rider* red;
     Rider* blue;

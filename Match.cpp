@@ -153,3 +153,19 @@ int Match::get_home_match_points() const {
 int Match::get_away_match_points() const {
     return away_score;
 }
+/* funkcja którą bot nominuje zawodników do wyścigów 14 i 15 (powinni jechać najlepsi) */
+void Match::bot_auto_nominate() {
+    std::vector<std::pair<int,int>> bot_riders; //pierwszy int punkty druigi int indeks zawodnika
+    for (int auto_nom_idx = 0; auto_nom_idx<8; auto_nom_idx++) {
+        bot_riders.push_back({away_team.get_rider_ptr(auto_nom_idx)->get_match_points(),auto_nom_idx});
+    }
+    /*r na początku oznacza reverse czyli sortuje malejąco po pierwszej zmiennej w std::pair */
+    std::sort(bot_riders.rbegin(), bot_riders.rend());
+    /* BIEG 14 */
+    match_schedule[13][2] = bot_riders[2].second;
+    match_schedule[13][3] = bot_riders[3].second;
+    /* BIEG 15 */
+    match_schedule[14][2] = bot_riders[0].second;
+    match_schedule[14][3] = bot_riders[1].second;
+}
+

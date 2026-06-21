@@ -3,9 +3,7 @@
 //
 
 #include "Heat.h"
-#include<vector>
-#include<algorithm>
-#include<cstdlib>
+
 /* konstruktor wyscigu przyjmujący wskaznik na zawodnika*/
 Heat::Heat(Rider *red, Rider *blue, Rider *white, Rider *yellow):red(red),blue(blue),white(white),yellow(yellow) {
     home_points =0;
@@ -35,11 +33,14 @@ int Heat::calculate_rider_score(Rider* rider) {
 /* FUNKCJA SYMULUJE WYŚCIG POBIERAJĄC PUNKTOWY WSPÓŁCZYNNIK MOCY ZAWODNIKÓW I SORTUJĄC PARY (PUNKTY MOCY ZAWODNIKA,WSKAZNIK NA ZAWODNIKA)
  * OD NAJMNIEJSZEGO DO NAJWIĘKSZEGO ZALEZNIE OD PUNKTÓW MOCY*/
 void Heat::simulate_race() {
-    int score_red = calculate_rider_score(red);
-    int score_blue = calculate_rider_score(blue);
+    /* PRZEWAGA TORU */ //NIE POWINIEMEM TEGO TU LICZYĆ ALE JEST TO NAJPROSTSZE ROZWIĄZANIE
+    int home_track_adventage_red = rand() % 5;
+    int home_track_adventage_blue = rand() % 5;
+    /* MOC BAZOWA */
+    int score_red = calculate_rider_score(red)+home_track_adventage_red;
+    int score_blue = calculate_rider_score(blue)+home_track_adventage_blue;
     int score_yellow =  calculate_rider_score(yellow);
     int score_white = calculate_rider_score(white);
-
     std::vector< std::pair<int, Rider*> > results;
     results.push_back(std::make_pair(score_red,red));
     results.push_back((std::make_pair(score_blue,blue)));

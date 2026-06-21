@@ -87,7 +87,7 @@ void Engine::handle_match_events() {
         if (event.type == sf::Event::KeyPressed) {
             if (active_substitution_helmet != -1) {
                 int selected_rider_idx = -1;
-
+   
                 if (event.key.code == sf::Keyboard::Num1) selected_rider_idx = 0;
                 else if (event.key.code == sf::Keyboard::Num2) selected_rider_idx = 1;
                 else if (event.key.code == sf::Keyboard::Num3) selected_rider_idx = 2;
@@ -107,7 +107,39 @@ void Engine::handle_match_events() {
                     }
                 }
             }
+            if (event.key.code == sf::Keyboard::Space) {
+                if (current_heat <= 15) {
+                    if (!is_heat_simulated) {
+                        std::vector<Rider*> starters = match.get_riders_for_heat(current_heat);
+                        if (starters[0] != nullptr && starters[1] != nullptr && starters[2] != nullptr && starters[3] != nullptr) {
+                            std::vector<int> pts_before_heat{
+                                starters[0]->get_match_points(), starters[1]->get_match_points(),
+                                starters[2]->get_match_points(), starters[3]->get_match_points(),
+                            };
+                            match.play_heat(current_heat);
+                            last_heat_points = {
+                                starters[0]->get_match_points() - pts_before_heat[0],
+                                starters[1]->get_match_points() - pts_before_heat[1],
+                                starters[2]->get_match_points() - pts_before_heat[2],
+                                starters[3]->get_match_points() - pts_before_heat[3],
+                            };
+                            is_heat_simulated = true;
+                        } else {
+                            std::cout << "Uzupelnij sklad biegow nominowanych!\n";
+                        }
+                    } else {
+                        current_heat++;
+                        is_heat_simulated = false;
+                        last_heat_points.clear();
+
+                        if (is_pve_mode && current_heat == 14) {
+                            match.bot_auto_nominate();
+                        }
+                    }
+                }
+            }
         }
+
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
             sf::Vector2f world_pos = window.mapPixelToCoords(mouse_pos);
@@ -121,12 +153,16 @@ void Engine::handle_match_events() {
                     std::cout << "Kliknięto niebieski kask\n";
                 }
                 else if(white_helmet_text.getGlobalBounds().contains(world_pos)) {
-                    active_substitution_helmet = 2;
-                    std::cout << "Kliknięto biały kask\n";
+                    if (!is_pve_mode) {
+                        active_substitution_helmet = 2;
+                        std::cout << "Kliknięto biały kask\n";
+                    }
                 }
                 else if(yellow_helmet_text.getGlobalBounds().contains(world_pos)) {
-                    active_substitution_helmet = 3;
-                    std::cout << "Kliknięto żółty kask\n";
+                    if (!is_pve_mode) {    //ważne zeby pozwalac tylko w trybie człowiek vs człowiek (ten warunek jest w każdej funkcji związanej ze zmianami)
+                        active_substitution_helmet = 3;
+                        std::cout << "Kliknięto żółty kask\n";
+                    }
                 }
                 else if (!sim_button->is_clicked(window)) {
                     active_substitution_helmet = -1;
@@ -156,6 +192,9 @@ void Engine::handle_match_events() {
                         current_heat++;
                         is_heat_simulated = false;
                         last_heat_points.clear();
+                        if (is_pve_mode && current_heat == 14) {
+                            match.bot_auto_nominate();
+                        }
                     }
                 }
             }
@@ -271,7 +310,7 @@ void Engine::render_match() {
                 instruction_text.setFont(font);
                 instruction_text.setCharacterSize(25);
                 instruction_text.setFillColor(sf::Color(200, 200, 200));
-                instruction_text.setString("Kliknij w kask zawodnika, aby dokonac zmiany. Przytrzymaj SHIFT dla Rezerwy Taktycznej.");
+                instruction_text.setString("Zmiana: Kliknij w kask | Rezerwa Taktyczna: Przytrzymaj SHIFT | Symuluj: Wcisnij SPACJE");
 
                 sf::FloatRect instrRect = instruction_text.getLocalBounds();
                 instruction_text.setOrigin(instrRect.left + instrRect.width / 2.0f, instrRect.top + instrRect.height / 2.0f);
@@ -400,7 +439,11 @@ void Engine::render_menu() {
     mode_text.setFont(font);
     mode_text.setCharacterSize(45);
     mode_text.setFillColor(sf::Color(200, 200, 200));
-    mode_text.setString("Tryb: Gracz vs Komputer");
+    if (is_pve_mode) {
+        mode_text.setString("Tryb: Gracz vs Komputer [Wcisnij T by zmienic]");
+    } else {
+        mode_text.setString("Tryb: Gracz vs Gracz [Wcisnij T by zmienic]");
+    }
     sf::FloatRect modeRect = mode_text.getLocalBounds();
     mode_text.setOrigin(modeRect.left + modeRect.width / 2.0f, modeRect.top + modeRect.height / 2.0f);
     mode_text.setPosition(sf::Vector2f(960, 300));
@@ -540,6 +583,9 @@ void Engine::handle_menu_events() {
 
                 current_state = GameState::LINE_UP_SETUP;
             }
+            else if (event.key.code == sf::Keyboard::T) {
+                is_pve_mode = !is_pve_mode; //zmiana stanu na przeciwny
+            }
         }
 
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
@@ -576,8 +622,10 @@ void Engine::handle_line_up_events() {
                 line_up_selected_rider = -1;
             }
             else if (event.key.code == sf::Keyboard::Right) {
-                line_up_active_team = 2;
-                line_up_selected_rider = -1;
+                if (!is_pve_mode) {
+                    line_up_active_team = 2;
+                    line_up_selected_rider = -1;
+                }
             }
             else {
                 int pressed_idx = -1;
@@ -588,6 +636,8 @@ void Engine::handle_line_up_events() {
                 else if (event.key.code == sf::Keyboard::Num5) pressed_idx = 4;
                 else if (event.key.code == sf::Keyboard::Num6) pressed_idx = 5;
                 else if (event.key.code == sf::Keyboard::Num7) pressed_idx = 6;
+                else if (event.key.code == sf::Keyboard::Num8) pressed_idx = 7;
+
 
                 if (pressed_idx != -1) {
                     if (line_up_selected_rider == -1) {

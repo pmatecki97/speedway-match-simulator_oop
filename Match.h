@@ -7,6 +7,7 @@
 #include "Team.h"
 #include "Heat.h"
 #include<vector>
+#include<algorithm>
 class Match {
     Team &home_team;
     Team &away_team;
@@ -33,7 +34,6 @@ class Match {
 public:
     Match(Team &home_team, Team &away_team);
     void play_heat(int heat_number);
-    void play_match();
     int get_home_match_points() const;
     int get_away_match_points() const;
     Team& get_home_team();
@@ -42,6 +42,7 @@ public:
     void make_substitution(int heat_number, int helmet_index, int new_rider_idx, bool is_tactical);/* helmet_index (1-C 2-N 3-B 4-Z)
     new_rider_index - numer zawodnika z wektora drużyny*/
     bool is_substitution_valid(int heat_number, int helmet_index, int new_rider_idx,bool is_tactical);
+    void bot_auto_nominate();
 };
 
 

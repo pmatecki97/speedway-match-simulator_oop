@@ -33,6 +33,7 @@ class Engine {
     void render_line_up();
     int line_up_active_team = 1; //  1 - gospodarze 2 - goście
     int line_up_selected_rider = -1; // -1 - nikogo nie kliknęliśmy
+    bool is_pve_mode = true; // true - człowiek vs bot , false - człowiek vs człowiek
     sf::Text score_text;
     sf::Text heat_text;
     sf::Text home_roster_text;
