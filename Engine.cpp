@@ -173,7 +173,7 @@ void Engine::render_match() {
     std::string home_str = "";
     std::string away_str = "";
 
-    for (int rider_idx = 0; rider_idx < 7; rider_idx++) {
+    for (int rider_idx = 0; rider_idx < 8; rider_idx++) {
         Rider* home_rider  = match.get_home_team().get_rider_ptr(rider_idx);
         Rider* away_rider  = match.get_away_team().get_rider_ptr(rider_idx);
 
@@ -337,7 +337,7 @@ void Engine::render_match() {
             current_team = &match.get_away_team();
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             sf::Text rider_text;
             rider_text.setFont(font);
             rider_text.setCharacterSize(40);
@@ -638,7 +638,7 @@ void Engine::render_line_up() {
     h_title.setPosition(300, 250);
     window.draw(h_title);
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
         sf::Text r_text;
         r_text.setFont(font);
         r_text.setCharacterSize(35);
@@ -663,7 +663,7 @@ void Engine::render_line_up() {
     a_title.setPosition(1200, 250);
     window.draw(a_title);
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
         sf::Text r_text;
         r_text.setFont(font);
         r_text.setCharacterSize(35);
